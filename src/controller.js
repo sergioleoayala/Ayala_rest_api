@@ -3,23 +3,27 @@ import {pool} from './database.js';
 class LibroController{
 
 	async getAll (req, res) {
-		const [result] = await pool.query('SELECT * FROM libros');
+		const [result] = await pool.query(`SELECT * FROM libros`);
 		res.json(result);
 
 	}
 	async getOne (req, res) {
-  		const libroId = req.params.id;
-  		const [result] = await pool.query('SELECT * FROM libros WHERE id = ?', [libroId]);
-  
-  			if (result.length === 0) {
-    		res.status(404).json({ message: 'Libro no encontrado' });
-  			} else {
-    	res.json(result[0]);
-  		}
+		try {
+  		const libro=req.body;
+  		const id_libro=parseInt(libro.id);
+  		const [result] = await pool.query(`SELECT * FROM libros WHERE id=(?)`, [id_libro]);
+   			if (result[0]!=undefined){
+    		res.json(result);
+    		} else {
+    		res.json({"Error":"No se ha encontrado el libro solicitado con el Id indicado"});
+    	}
+    	} catch(e){
+    		console.log(e);
+    	}
 	}
 	async add (req, res) {
 		const libro = req.body;
-		const [result] = await pool.query(`INSERT INTO libros (nombre, autor, categoria, año_publicacion, ISBN) VALUES (?, ?, ?, ?, ?)`, [libro.nombre, libro.autor, libro.categoria, libro.año_publicacion, libro.ISBN])
+		const [result] = await pool.query(`INSERT INTO libros (nombre, autor, categoria, año_publicación, ISBN) VALUES (?, ?, ?, ?, ?)`, [libro.nombre, libro.autor, libro.categoria, libro.año_publicación, libro.ISBN])
 		res.json({"Id insertado": result.insertId});
 	}
 
@@ -32,7 +36,7 @@ class LibroController{
 
 	async update (req, res){
 		const libro = req.body;
-		const [result] = await pool.query (`UPDATE libros SET nombre=(?), autor=(?), categoria=(?), año_publicacion=(?), ISBN=(?) WHERE id=(?)`, [libro.nombre, libro.autor, libro.categoria, libro.año_publicacion, libro.ISBN, libro.id]);
+		const [result] = await pool.query (`UPDATE libros SET nombre=(?), autor=(?), categoria=(?), año_publicación=(?), ISBN=(?) WHERE id=(?)`, [libro.nombre, libro.autor, libro.categoria, libro.año_publicación, libro.ISBN, libro.id]);
 		res.json({"Registros actualizados": result.changedRows});
 	}
 }
