@@ -7,15 +7,19 @@ class LibroController{
 		res.json(result);
 
 	}
-	async getOne (req, res) {
-  		const libroId = req.params.id;
-  		const [result] = await pool.query('SELECT * FROM libros WHERE id = ?', [libroId]);
-  
-  			if (result.length === 0) {
-    		res.status(404).json({ message: 'Libro no encontrado' });
-  			} else {
-    	res.json(result[0]);
-  		}
+		async getOne (req, res) {
+		try {
+  		const libro=req.body;
+  		const id_libro=parseInt(libro.id);
+  		const [result] = await pool.query(`SELECT * FROM libros WHERE id=(?)`, [id_libro]);
+   			if (result[0]!=undefined){
+    		res.json(result);
+    		} else {
+    		res.json({"Error":"No se ha encontrado el libro solicitado con el Id indicado"});
+    	}
+    	} catch(e){
+    		console.log(e);
+    	}
 	}
 	async add (req, res) {
 		const libro = req.body;
