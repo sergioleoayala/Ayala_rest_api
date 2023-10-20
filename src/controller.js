@@ -42,10 +42,29 @@ class LibroController{
 	}
 
 
-	async delete (req, res){
-		const libro = req.body;
-		const [result] = await pool.query (`DELETE FROM libros WHERE isbn=(?)`, [libro.isbn]);
-		res.json({"Registros eliminados": result.affectedRows});
+async delete(req, res) {
+    const libro = req.body;
+    try {
+        if (!libro || (!libro.isbn && !libro.id)) {
+            throw new Error("Debes proporcionar ISBN o ID para eliminar un libro.");
+        }
+
+        let query;
+        let queryParams;
+
+        if (libro.isbn) {
+            query = `DELETE FROM Libros WHERE isbn =(?)`;
+            queryParams = [libro.isbn];
+        } else {
+            query = `DELETE FROM Libros WHERE id =(?)`;
+            queryParams = [libro.id];
+        }
+
+        const [result] = await pool.query(query, queryParams);
+        res.json({ "Registro eliminado": result.affectedRows });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
 }
 	
 	async update (req, res){
