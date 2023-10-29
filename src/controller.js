@@ -12,7 +12,7 @@ class LibroController{
 	}
 
 	//pedir un libro desde ID o desde ISBN
-	async function getOne(req, res) {
+	async getOne (req, res) {
     const libro = req.body;
     try {
         if (!libro || (!libro.isbn && !libro.id)) {
@@ -48,7 +48,7 @@ class LibroController{
 	}
 
 //borrar libro desde ISBN o ID
-async delete(req, res) {
+async delete (req, res) {
     const libro = req.body;
     try {
         if (!libro || (!libro.isbn && !libro.id)) {
